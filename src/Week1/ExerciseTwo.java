@@ -1,10 +1,11 @@
-package Exercise1;
+package Week1;
 
 import java.util.function.Function;
 
 public class ExerciseTwo {
 
-    public static final int NUMBER_OF_THREADS = 3;
+    public static final int NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
+
     public static double estimateIntegralSequential(double lower, double upper, double h, Function<Double, Double> f) {
         double n = (upper - lower) / h;
 
@@ -29,15 +30,7 @@ public class ExerciseTwo {
         for (int ti = 0; ti < NUMBER_OF_THREADS; ti++) {
             final int tid = ti;
 
-            // 0 -> 10
-            // n = 5
-            // threads = 3
-            // it  0 1 2 3 4 5
-            // val 0 2 4 6 8 10
-            // thread 1 -> 0 to 1 * n / 3 = 2
-            // thread 2 -> 2 to 2 * n / 3 = 3
-            // thread 3 -> 3 to last 5
-            threads[tid] = new Thread( () -> {
+            threads[tid] = new Thread(() -> {
                 int start_i = tid * n / NUMBER_OF_THREADS;
                 int end_i = (tid + 1) * n / NUMBER_OF_THREADS;
 
@@ -55,7 +48,6 @@ public class ExerciseTwo {
             threads[tid].start();
         }
 
-        // Wait until all threads have finished
         for (Thread t : threads) {
             try {
                 t.join();
@@ -65,7 +57,7 @@ public class ExerciseTwo {
         }
 
         // Sum everything up
-        for (float value: calculations) {
+        for (float value : calculations) {
             result += value;
         }
 

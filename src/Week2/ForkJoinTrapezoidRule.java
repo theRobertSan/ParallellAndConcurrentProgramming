@@ -1,4 +1,4 @@
-package Exercise2;
+package Week2;
 
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Function;
