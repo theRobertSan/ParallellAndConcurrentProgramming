@@ -2,6 +2,7 @@ package Week1;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Main {
 
@@ -23,30 +24,69 @@ public class Main {
 //
 
         // Exercise 2
-//        double test1 = 2.1;
-//
-//        Function<Double, Double> f = x -> x * (x - 1);
-//        System.out.println(ExerciseTwo.estimateIntegralSequential(5, 10, 0.5, f));
+
+        double lower = 0;
+        double upper = 30;
+        double res = 1E-7;
+
+        Function<Double, Double> f = x -> x * (x - 1);
+
+        // Sequential
+        // (1485ms - input 1, 30, 1E-7)
+//        System.out.println(ExerciseTwo.estimateIntegralSequential(lower, upper, res, f));
+
+        // Parallel
+        // (311ms - input 1, 30, 1E-7)
+//        System.out.println(ExerciseTwo.estimateIntegralParallel(lower, upper, res, f));
+
+        // Parallel using library
+        // (325ms - input 1, 30, 1E-7)
+//        System.out.println(exerciseTwoUsingLibrary(lower, upper, res, f));
 
         // Exercise 3
-        // (5650ms - input 2000000000)
-//        double pi = ExerciseThree.findPiParallel(2000000000);
 
+        int darts = 2000000000;
+
+        // Sequential
         // (43564ms - input 2000000000)
-//        double pi = ExerciseThree.findPiSequential(2000000000);
-//        System.out.println("PI = " + pi);
+//        double pi = ExerciseThree.findPiSequential(darts);
 
-        // Exercise 3 using library
+        // Parallel
         // (5650ms - input 2000000000)
-//        System.out.println("PI = " + exerciseThreeUsingLibrary());
+//        double pi = ExerciseThree.findPiParallel(darts);
+
+        // Parallel using library
+        // (5650ms - input 2000000000)
+//        double pi = exerciseThreeUsingLibrary(darts);
 
         long finish = System.currentTimeMillis();
         System.out.println("Finished in " + (finish - start) + "ms.");
     }
 
-    private static double exerciseThreeUsingLibrary() {
+    private static double exerciseTwoUsingLibrary(double lower, double upper, double res, Function<Double, Double> f) {
+        int n = (int) ((upper - lower) / res);
 
-        int darts = 2000000000;
+        double result = f.apply(lower) + f.apply(upper);
+
+        BiFunction<Integer, Integer, Double> estimatePartialIntegral = (start_i, end_i) -> {
+            double acc = 0;
+
+            for (int i = start_i; i < end_i; i++) {
+                acc += 2 * f.apply(lower + i * res);
+            }
+            return acc;
+        };
+
+        result += ParallelFramework.parallelize(estimatePartialIntegral, n)
+                .stream()
+                .mapToDouble(Double::doubleValue)
+                .sum();
+
+        return result * (res / 2);
+    }
+
+    private static double exerciseThreeUsingLibrary(int darts) {
+
         int radius = 1;
         double centerX = 0;
         double centerY = 0;

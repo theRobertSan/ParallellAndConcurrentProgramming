@@ -6,44 +6,38 @@ public class ExerciseTwo {
 
     public static final int NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
 
-    public static double estimateIntegralSequential(double lower, double upper, double h, Function<Double, Double> f) {
-        double n = (upper - lower) / h;
+    public static double estimateIntegralSequential(double lower, double upper, double res, Function<Double, Double> f) {
+        int n = (int) ((upper - lower) / res);
 
         double result = f.apply(lower) + f.apply(upper);
 
         for (int i = 1; i < n; i++) {
-            result += 2 * f.apply(lower + i * h);
+            result += 2 * f.apply(lower + i * res);
         }
-        return Math.abs(result * (h / 2));
+        return result * (res / 2);
     }
 
-    public static float estimateIntegralParallel(float a, float b, int n, Function<Float, Float> f) {
+    public static double estimateIntegralParallel(double a, double b, double res, Function<Double, Double> f) {
 
         Thread[] threads = new Thread[NUMBER_OF_THREADS];
 
-        float h = (b - a) / n;
+        double[] partialCalculations = new double[NUMBER_OF_THREADS];
 
-        float result = f.apply(a) + f.apply(b);
-
-        float[] calculations = new float[n];
+        int n = (int) ((b - a) / res);
+        double result = f.apply(a) + f.apply(b);
 
         for (int ti = 0; ti < NUMBER_OF_THREADS; ti++) {
             final int tid = ti;
 
             threads[tid] = new Thread(() -> {
-                int start_i = tid * n / NUMBER_OF_THREADS;
-                int end_i = (tid + 1) * n / NUMBER_OF_THREADS;
+                int start_i = tid == 0 ? 1 : tid * n / NUMBER_OF_THREADS;
+                int end_i = tid == NUMBER_OF_THREADS - 1 ? n : (tid + 1) * n / NUMBER_OF_THREADS;
 
-                if (tid == NUMBER_OF_THREADS - 1) {
-                    end_i = n;
-                }
-
-                System.out.println("Thread looping from " + start_i + " to " + end_i);
-
-                calculations[tid] = 0;
+                double acc = 0;
                 for (int i = start_i; i < end_i; i++) {
-                    calculations[tid] += 2 * f.apply((float) a + i * h);
+                    acc += 2 * f.apply(a + i * res);
                 }
+                partialCalculations[tid] = acc;
             });
             threads[tid].start();
         }
@@ -57,11 +51,11 @@ public class ExerciseTwo {
         }
 
         // Sum everything up
-        for (float value : calculations) {
+        for (double value : partialCalculations) {
             result += value;
         }
 
-        return result * (h / 2);
+        return result * (res / 2);
     }
 
 }

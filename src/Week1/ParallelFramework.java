@@ -23,7 +23,7 @@ public class ParallelFramework {
 
             threads[ti] = new Thread(() -> {
 
-                int start_i = tid * (numIterations / numThreads);
+                int start_i = tid == 0 ? 1 : tid * (numIterations / numThreads);
                 int end_i = tid == (numThreads - 1) ? numIterations : (tid + 1) * (numIterations / numThreads);
 
                 partialResults.set(tid, iterate.apply(start_i, end_i));

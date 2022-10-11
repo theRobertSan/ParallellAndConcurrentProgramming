@@ -4,13 +4,21 @@ import java.util.function.Function;
 
 public class Main {
     public static void main(String[] args) {
-        double upper = 5;
-        double lower = 10;
-        double res = 0.5;
-        Function<Double, Double> f = x -> x * (x - 1);
-        ForkJoinTrapezoidRule thing = new ForkJoinTrapezoidRule(lower, upper, res, f);
-        thing.fork();
 
-        System.out.println(thing.join());
+        long start = System.currentTimeMillis();
+
+        double upper = 0;
+        double lower = 30;
+        double res = 1E-7;
+
+        Function<Double, Double> f = x -> x * (x - 1);
+
+        ForkJoinTrapezoidRule fjSolver = new ForkJoinTrapezoidRule(lower, upper, res, f);
+        fjSolver.fork();
+
+        System.out.println(fjSolver.join());
+
+        long finish = System.currentTimeMillis();
+        System.out.println("Finished in " + (finish - start) + "ms.");
     }
 }

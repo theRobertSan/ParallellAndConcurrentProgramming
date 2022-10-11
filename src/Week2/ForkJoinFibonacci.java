@@ -12,7 +12,6 @@ public class ForkJoinFibonacci extends RecursiveTask<Integer> {
         this.depth = depth;
     }
 
-
     @Override
     protected Integer compute() {
         if (n == 0 || n == 1) return 1;
@@ -27,12 +26,12 @@ public class ForkJoinFibonacci extends RecursiveTask<Integer> {
         //if ( this.getQueuedTaskCount() > 4 * Runtime.getRuntime().availableProcessors() ) return seqFib(n);
 
         // Surplus: if the current queue has more than 2 tasks than the average
-        if ( RecursiveTask.getSurplusQueuedTaskCount() > 2 ) return seqFib(n);
+        if (RecursiveTask.getSurplusQueuedTaskCount() > 2) return seqFib(n);
 
-        ForkJoinFibonacci f1 = new ForkJoinFibonacci(n-1, depth+1);
+        ForkJoinFibonacci f1 = new ForkJoinFibonacci(n - 1, depth + 1);
         f1.fork();
 
-        ForkJoinFibonacci f2 = new ForkJoinFibonacci(n-2, depth+1);
+        ForkJoinFibonacci f2 = new ForkJoinFibonacci(n - 2, depth + 1);
         //f2.fork();
 
         int b = f2.compute();
@@ -47,7 +46,7 @@ public class ForkJoinFibonacci extends RecursiveTask<Integer> {
 
     public static int seqFib(int n) {
         if (n == 0 || n == 1) return 1;
-        return seqFib(n-1) + seqFib(n-2);
+        return seqFib(n - 1) + seqFib(n - 2);
     }
 
 
@@ -69,7 +68,6 @@ public class ForkJoinFibonacci extends RecursiveTask<Integer> {
 
         System.out.println(pf.join());
     }
-
 
 
 }

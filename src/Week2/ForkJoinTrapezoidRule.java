@@ -1,5 +1,7 @@
 package Week2;
 
+import Week1.ExerciseTwo;
+
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Function;
 
@@ -19,13 +21,18 @@ public class ForkJoinTrapezoidRule extends RecursiveTask<Double> {
 
     @Override
     protected Double compute() {
-        double area = (f.apply(lower) + f.apply(upper))/2 * (upper - lower);
+        double area = (f.apply(lower) + f.apply(upper)) / 2 * (upper - lower);
 
-        double halfSplit = lower + (upper-lower)/2;
-        double half1Area = (f.apply(lower) + f.apply(halfSplit))/2 * (halfSplit - lower);
-        double half2Area = (f.apply(halfSplit) + f.apply(upper))/2 * (upper - halfSplit);
+        double halfSplit = lower + (upper - lower) / 2;
+        double half1Area = (f.apply(lower) + f.apply(halfSplit)) / 2 * (halfSplit - lower);
+        double half2Area = (f.apply(halfSplit) + f.apply(upper)) / 2 * (upper - halfSplit);
 
         double difference = Math.abs(area - (half2Area + half1Area));
+
+//        if (difference < 1E-7) {
+//            return ExerciseTwo.estimateIntegralSequential(lower, upper, res, f);
+//        }
+
         if (difference < res) {
             return half1Area + half2Area;
         }
